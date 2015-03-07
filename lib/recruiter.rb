@@ -1,15 +1,14 @@
 require "recruiter/api"
 require "recruiter/candidate"
+require "recruiter/search"
 require "recruiter/version"
-require "octokit"
 
 module Recruiter
-  def recruit
-    users = API.build_client.legacy_search_users("repos:>5")
-    users.map { |data| Candidate.new(data) }
+  def search
+    Search.new
   end
 
-  module_function :recruit
+  module_function :search
 end
 
 begin

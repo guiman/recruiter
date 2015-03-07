@@ -1,9 +1,21 @@
 module Recruiter
   class Candidate
-    DATA_METHODS = [:fullname, :email, :location]
+    DATA_METHODS = [:fullname, :email, :location, :repository_count, :hireable]
 
     def initialize(data)
       @data = data
+    end
+
+    def repository_count
+      @data.repos
+    end
+
+    def email
+      @email ||= ::Recruiter::API.build_client.user(@data.login).email
+    end
+
+    def hireable
+      @hireable ||= ::Recruiter::API.build_client.user(@data.login).hireable
     end
 
     def method_missing(name)

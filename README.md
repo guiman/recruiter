@@ -20,7 +20,16 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Remember to set GITHUB_ACCESS_TOKEN env variable to increase API threshold limit
+
+```
+candidates = Recruiter.search.at("Portsmouth").and_at("Southampton").with_repos('>5').all
+
+candidates.first.email
+candidates.first.location
+candidates.first.fullname
+candidates.first.repository_count
+```
 
 ## Contributing
 
