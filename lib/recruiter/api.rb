@@ -3,7 +3,7 @@ require 'octokit'
 module Recruiter
   class API
     def self.build_client
-      ::Octokit::Client.new configuration
+      @client ||= ::Octokit::Client.new configuration
     end
 
     def self.configuration
