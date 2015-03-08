@@ -17,17 +17,20 @@ describe Recruiter::Candidate do
     data = double("data",
                   fullname: "field value",
                   location: "Death star",
-                  repos: 5)
+                  repos: 5,
+                  languages: ['Ruby'])
     candidate = Recruiter::Candidate.new(data)
 
     allow(candidate).to receive(:hireable).and_return(true)
     allow(candidate).to receive(:email).and_return("email@domain.com")
+    allow(candidate).to receive(:languages).and_return(['Ruby'])
     expect(candidate.to_hash).to eq({
       fullname: "field value",
       email: "email@domain.com",
       location:"Death star",
       repository_count: 5,
-      hireable: true
+      hireable: true,
+      languages: ['Ruby']
     })
   end
 end

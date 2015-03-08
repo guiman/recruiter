@@ -4,19 +4,26 @@ module Recruiter
   class Search
     NoFilterError = Class.new(StandardError)
 
-    def initialize
-      @filters = []
+    def initialize(filters: [])
+      @filters = filters
+      freeze
     end
 
     def at(location)
-      @filters << "location:#{location}"
-      self
+      filters = @filters.dup << "location:#{location}"
+      self.class.new(filters: filters)
     end
     alias_method :and_at, :at
 
     def with_repos(repository_filter)
-      @filters << "repos:#{repository_filter}"
-      self
+      filters = @filters.dup << "repos:#{repository_filter}"
+      self.class.new(filters: filters)
+    end
+
+    def skills(languages)
+      filters = @filters.dup
+      languages.split(',').map { |language| "language:#{language}" }.inject(filters) { |acc, obj| acc << obj }
+      self.class.new(filters: filters)
     end
 
     def filters

@@ -14,6 +14,14 @@ describe Recruiter::Search do
     end
   end
 
+  describe "#skills" do
+    it "returns a collection of candidates with repos that include any of the mentioned skills" do
+      candidates = Recruiter.search.skills('Ruby,Javascript').all
+
+      expect(candidates.first.languages).to include('Ruby', 'Javascript')
+    end
+  end
+
   describe "#with_repos" do
     it "returns a collection of candidates with more than 5 repositories" do
       candidates = Recruiter.search.with_repos('>5').all
@@ -30,11 +38,10 @@ describe Recruiter::Search do
     end
   end
 
-
   describe "filters" do
     it "returns a string representing all applied filters" do
-      search = Recruiter::Search.new
-      search.with_repos('>5')
+      search = Recruiter::Search.new.with_repos('>5')
+
       expect(search.filters).to include('repos:>5')
     end
   end

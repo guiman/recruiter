@@ -1,6 +1,6 @@
 module Recruiter
   class Candidate
-    DATA_METHODS = [:fullname, :email, :location, :repository_count, :hireable]
+    DATA_METHODS = [:fullname, :email, :location, :repository_count, :hireable, :languages]
 
     def initialize(data)
       @data = data
@@ -8,6 +8,12 @@ module Recruiter
 
     def repository_count
       @data.repos
+    end
+
+    def languages
+      ::Recruiter::API.build_client.user(@data.login).rels[:repos].get.data.map do |repo|
+        repo.language
+      end.compact.uniq.map(&:capitalize)
     end
 
     def email
