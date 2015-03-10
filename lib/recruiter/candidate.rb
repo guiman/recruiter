@@ -1,6 +1,6 @@
 module Recruiter
   class Candidate
-    DATA_METHODS = [:fullname, :email, :location, :repository_count, :hireable, :languages]
+    DATA_METHODS = [:fullname, :email, :location, :login, :repository_count, :hireable, :languages]
 
     def initialize(data)
       @data = data

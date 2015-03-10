@@ -17,8 +17,8 @@ describe Recruiter::Candidate do
     data = double("data",
                   fullname: "field value",
                   location: "Death star",
-                  repos: 5,
-                  languages: ['Ruby'])
+                  login: "darthvader",
+                  repos: 5)
     candidate = Recruiter::Candidate.new(data)
 
     allow(candidate).to receive(:hireable).and_return(true)
@@ -28,6 +28,7 @@ describe Recruiter::Candidate do
       fullname: "field value",
       email: "email@domain.com",
       location:"Death star",
+      login: "darthvader",
       repository_count: 5,
       hireable: true,
       languages: ['Ruby']

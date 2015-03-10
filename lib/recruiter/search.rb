@@ -22,7 +22,8 @@ module Recruiter
 
     def skills(languages)
       filters = @filters.dup
-      languages.split(',').map { |language| "language:#{language}" }.inject(filters) { |acc, obj| acc << obj }
+      languages.split(',').map { |language|
+        "language:#{language}" }.inject(filters) { |acc, obj| acc << obj }
       self.class.new(filters: filters)
     end
 
