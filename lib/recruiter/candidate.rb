@@ -1,6 +1,6 @@
 module Recruiter
   class Candidate
-    DATA_METHODS = [:fullname, :email, :location, :login, :forked_repository_count, :repository_count, :hireable, :languages]
+    DATA_METHODS = [:fullname, :email, :location, :login, :owned_repositories_count, :hireable, :languages]
 
     def initialize(data)
       @data = data
@@ -10,14 +10,24 @@ module Recruiter
       @data.repos
     end
 
+    def owned_repositories_count
+      owned_repositories.count
+    end
+
+    def owned_repositories
+      all_repositories.select { |repository| !repository.fork }
+    end
+
+    def all_repositories
+      @repositories ||= ::Recruiter::API.build_client.user(@data.login).rels[:repos].get.data
+    end
+
     def forked_repository_count
-      ::Recruiter::API.build_client.user(@data.login).rels[:repos].get(uri: { type: 'forks'}).data.count
+      repository_count - owned_repositories.count
     end
 
     def languages
-      ::Recruiter::API.build_client.user(@data.login).rels[:repos].get.data.map do |repo|
-        repo.language
-      end.compact.uniq.map(&:capitalize)
+      owned_repositories.map { |repo| repo.language }.compact.uniq.map(&:capitalize)
     end
 
     def email
