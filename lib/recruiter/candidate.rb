@@ -1,6 +1,6 @@
 module Recruiter
   class Candidate
-    DATA_METHODS = [:fullname, :email, :location, :login, :repository_count, :hireable, :languages]
+    DATA_METHODS = [:fullname, :email, :location, :login, :forked_repository_count, :repository_count, :hireable, :languages]
 
     def initialize(data)
       @data = data
@@ -8,6 +8,10 @@ module Recruiter
 
     def repository_count
       @data.repos
+    end
+
+    def forked_repository_count
+      ::Recruiter::API.build_client.user(@data.login).rels[:repos].get(uri: { type: 'forks'}).data.count
     end
 
     def languages
