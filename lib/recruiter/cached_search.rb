@@ -9,13 +9,13 @@ module Recruiter
       @redis ||= ::Redis.new
     end
 
-    def all
+    def all(model: ::Recruiter::CachedCandidate)
       redis_cache_key = filters
 
       if cached_search = self.class.redis.get(redis_cache_key)
         cached_search = Marshal.load(cached_search)
       else
-        search_results = super(model: ::Recruiter::CachedCandidate)
+        search_results = super(model: model)
         self.class.redis.set(redis_cache_key, Marshal.dump(search_results))
         self.class.redis.expire redis_cache_key, 300
         cached_search = search_results
