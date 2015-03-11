@@ -34,6 +34,17 @@ candidate.repository_count
 candidate.languages
 ```
 
+
+## Caching requests
+
+When searching we can make sure our results are cached to prevent exceding the
+Github API limit and also make response time shorter.
+
+Introducing `Recruiter.search(cached: true)`.
+
+It will behave the same way as the normal search but with the improvement that
+results will be cached into a redis server.
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/recruiter/fork )
