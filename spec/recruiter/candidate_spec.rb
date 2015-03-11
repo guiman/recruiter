@@ -21,18 +21,10 @@ describe Recruiter::Candidate do
                   repos: 5)
     candidate = Recruiter::Candidate.new(data)
 
-    allow(candidate).to receive(:hireable).and_return(true)
-    allow(candidate).to receive(:email).and_return("email@domain.com")
-    allow(candidate).to receive(:languages).and_return(['Ruby'])
-    allow(candidate).to receive(:owned_repositories_count).and_return(5)
-    expect(candidate.to_hash).to eq({
-      fullname: "field value",
-      email: "email@domain.com",
-      location:"Death star",
-      login: "darthvader",
-      owned_repositories_count: 5,
-      hireable: true,
-      languages: ['Ruby']
-    })
+    allow(candidate).to receive(:hireable)
+    allow(candidate).to receive(:email)
+    allow(candidate).to receive(:languages)
+    allow(candidate).to receive(:owned_repositories_count)
+    expect(candidate.to_hash.keys).to match_array([:fullname,:email,:location,:login,:owned_repositories_count,:hireable, :languages])
   end
 end
