@@ -19,7 +19,7 @@ module Recruiter
     end
 
     def all_repositories
-      @repositories ||= ::Recruiter::API.build_client.user(@data.login).rels[:repos].get.data
+      ::Recruiter::API.build_client.user(@data.login).rels[:repos].get.data
     end
 
     def forked_repository_count

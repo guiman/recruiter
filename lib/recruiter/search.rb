@@ -31,9 +31,9 @@ module Recruiter
       @filters.join(' ')
     end
 
-    def all
+    def all(model: ::Recruiter::Candidate)
       ::Recruiter::API.build_client.legacy_search_users(filters).map do |data|
-        ::Recruiter::Candidate.new(data)
+        model.new(data)
       end
     rescue Octokit::NotFound
       raise NoFilterError.new("You need to specify a filter to make a search")

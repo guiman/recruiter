@@ -1,4 +1,5 @@
 require 'recruiter/search'
+require 'recruiter/cached_candidate'
 require 'redis'
 require 'json'
 
@@ -14,7 +15,7 @@ module Recruiter
       if cached_search = self.class.redis.get(redis_cache_key)
         cached_search = Marshal.load(cached_search)
       else
-        search_results = super
+        search_results = super(model: ::Recruiter::CachedCandidate)
         self.class.redis.set(redis_cache_key, Marshal.dump(search_results))
         self.class.redis.expire redis_cache_key, 300
         cached_search = search_results
