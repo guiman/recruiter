@@ -10,28 +10,40 @@ module Recruiter
     def all_repositories
       redis_cache_key = "#{login}_all_repositories"
       if repositories = self.class.redis.get(redis_cache_key)
-        cached_candidate = Marshal.load(repositories)
+        cached_repositories = Marshal.load(repositories)
       else
         repositories = super
         self.class.redis.set(redis_cache_key, Marshal.dump(repositories))
-        cached_candidate = repositories
+        cached_repositories = repositories
       end
 
-      cached_candidate
+      cached_repositories
     end
 
     def languages
       redis_cache_key = "#{login}_languages"
-      if repositories = self.class.redis.get(redis_cache_key)
-        cached_candidate = Marshal.load(repositories)
+      if languages = self.class.redis.get(redis_cache_key)
+        cached_languages = Marshal.load(languages)
       else
-        repositories = super
-        self.class.redis.set(redis_cache_key, Marshal.dump(repositories))
-        cached_candidate = repositories
+        languages = super
+        self.class.redis.set(redis_cache_key, Marshal.dump(languages))
+        cached_languages = languages
       end
 
-      cached_candidate
+      cached_languages
     end
 
+    def email
+      redis_cache_key = "#{login}_email"
+      if email = self.class.redis.get(redis_cache_key)
+        cached_email = Marshal.load(email)
+      else
+        email  = super
+        self.class.redis.set(redis_cache_key, Marshal.dump(email))
+        cached_email = email
+      end
+
+      cached_email
+    end
   end
 end
