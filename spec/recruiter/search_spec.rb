@@ -18,7 +18,7 @@ describe Recruiter::Search do
     it "returns a collection of candidates with repos that include any of the mentioned skills" do
       candidates = Recruiter.search.skills('Ruby,Javascript').all
 
-      expect(candidates.first.languages.map(&:first)).to include('Ruby', 'Javascript')
+      expect(candidates.first.languages.map(&:first)).to include(:Ruby, :JavaScript)
     end
   end
 

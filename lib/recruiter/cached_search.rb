@@ -17,7 +17,6 @@ module Recruiter
       else
         search_results = super(model: model)
         self.class.redis.set(redis_cache_key, Marshal.dump(search_results))
-        self.class.redis.expire redis_cache_key, 300
         cached_search = search_results
       end
 

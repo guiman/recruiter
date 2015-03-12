@@ -14,7 +14,6 @@ module Recruiter
       else
         repositories = super
         self.class.redis.set(redis_cache_key, Marshal.dump(repositories))
-        self.class.redis.expire redis_cache_key, 300
         cached_candidate = repositories
       end
 
@@ -28,7 +27,6 @@ module Recruiter
       else
         repositories = super
         self.class.redis.set(redis_cache_key, Marshal.dump(repositories))
-        self.class.redis.expire redis_cache_key, 300
         cached_candidate = repositories
       end
 
