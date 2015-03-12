@@ -1,3 +1,5 @@
+require 'recruiter/candidate/skills'
+
 module Recruiter
   class Candidate
     DATA_METHODS = [:fullname, :email, :location, :login, :owned_repositories_count, :hireable, :languages]
@@ -24,6 +26,10 @@ module Recruiter
 
     def forked_repository_count
       repository_count - owned_repositories.count
+    end
+
+    def skills
+      Skills.new(self)
     end
 
     def languages
