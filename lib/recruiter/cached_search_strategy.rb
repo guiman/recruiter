@@ -22,12 +22,12 @@ module Recruiter
       if cached_search = self.class.redis.get(redis_cache_key)
         cached_search = Marshal.load(cached_search)
       else
-        search_results = @composite.all(search).map { |candidate| model.new(candidate) }
+        search_results = @composite.all(search)
         self.class.redis.set(redis_cache_key, Marshal.dump(search_results))
         cached_search = search_results
       end
 
-      cached_search
+      cached_search.map { |candidate| model.new(candidate) }
     end
   end
 end

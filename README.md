@@ -37,14 +37,7 @@ candidate.location
 candidate.fullname
 candidate.repository_count
 candidate.languages
-
-#redis cached search results
-Recruiter.search(search_strategy: CachedSearchStrategy)
-	.("Portsmouth")
-	.and_at("Southampton")
-	.with_repos('>5')
-	.skills("Ruby,Javascript")
-	.all
+candidate.skills
 ```
 
 
@@ -53,7 +46,7 @@ Recruiter.search(search_strategy: CachedSearchStrategy)
 When searching we can make sure our results are cached to prevent exceding the
 Github API limit and also make response time shorter.
 
-Introducing `Recruiter.search(cached: true)`.
+Introducing `Recruiter.search(search_strategy: Recruiter::CachedSearchStrategy)`.
 
 It will behave the same way as the normal search but with the improvement that
 results will be cached into a redis server.

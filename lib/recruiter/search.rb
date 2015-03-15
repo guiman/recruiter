@@ -8,13 +8,13 @@ module Recruiter
 
     def at(location)
       filters = @filters.dup << "location:#{location}"
-      self.class.new(filters: filters)
+      self.class.new(filters: filters, search_strategy: @search_strategy)
     end
     alias_method :and_at, :at
 
     def with_repos(repository_filter)
       filters = @filters.dup << "repos:#{repository_filter}"
-      self.class.new(filters: filters)
+      self.class.new(filters: filters, search_strategy: @search_strategy)
     end
 
     def skills(languages)
@@ -22,7 +22,7 @@ module Recruiter
       languages.split(',')
         .map { |language| "language:#{language}" }
         .inject(filters) { |acc, obj| acc << obj }
-      self.class.new(filters: filters)
+      self.class.new(filters: filters, search_strategy: @search_strategy)
     end
 
     def filters
