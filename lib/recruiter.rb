@@ -1,12 +1,12 @@
 require "recruiter/api"
 require "recruiter/candidate"
-require "recruiter/cached_search"
+require "recruiter/no_search_strategy"
 require "recruiter/search"
 require "recruiter/version"
 
 module Recruiter
-  def search(cached: false)
-    cached ? CachedSearch.new : Search.new
+  def search(search_strategy: NoSearchStrategy)
+    Search.new(search_strategy: search_strategy)
   end
 
   module_function :search

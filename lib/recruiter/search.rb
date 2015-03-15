@@ -2,9 +2,8 @@ require "octokit"
 
 module Recruiter
   class Search
-    NoFilterError = Class.new(StandardError)
-
-    def initialize(filters: [])
+    def initialize(search_strategy: NoSearchStrategy, filters: [])
+      @search_strategy = search_strategy.new(self)
       @filters = filters
       freeze
     end
@@ -22,8 +21,9 @@ module Recruiter
 
     def skills(languages)
       filters = @filters.dup
-      languages.split(',').map { |language|
-        "language:#{language}" }.inject(filters) { |acc, obj| acc << obj }
+      languages.split(',')
+        .map { |language| "language:#{language}" }
+        .inject(filters) { |acc, obj| acc << obj }
       self.class.new(filters: filters)
     end
 
@@ -31,12 +31,8 @@ module Recruiter
       @filters.join(' ')
     end
 
-    def all(model: ::Recruiter::Candidate)
-      ::Recruiter::API.build_client.legacy_search_users(filters).map do |data|
-        model.new(data)
-      end
-    rescue Octokit::NotFound
-      raise NoFilterError.new("You need to specify a filter to make a search")
+    def all
+      @search_strategy.all
     end
   end
 end
