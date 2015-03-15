@@ -2,6 +2,18 @@
 
 TODO: Write a gem description
 
+## Dependecies
+
+### Installing redis
+```
+$ brew install redis
+```
+
+### Starting redis server
+```
+$ redis-server
+```
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -50,6 +62,12 @@ Introducing `Recruiter.search(search_strategy: Recruiter::CachedSearchStrategy)`
 
 It will behave the same way as the normal search but with the improvement that
 results will be cached into a redis server.
+
+## Running tests gotchats
+When running tests, please make sure redis-server is running and accessible through default setup in localhost. Test related to caching results will try to use it.
+
+Also remember that if you are planning on using caching strategies, redis also needs to be running.
+
 
 ## Contributing
 
