@@ -33,12 +33,7 @@ module Recruiter
     end
 
     def languages
-      owned_repositories.map do |repo|
-        repo.rels[:languages].get.data.to_hash.keys
-      end.flatten.group_by { |lang| lang }
-        .map { |k,v| [k, v.count] }
-        .sort_by { |pair| pair.last }
-        .inject({}) { |acc, val| acc[val.first] = val.last; acc }
+      skills.languages
     end
 
     def email
