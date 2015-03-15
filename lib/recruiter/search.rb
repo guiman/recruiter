@@ -1,9 +1,7 @@
-require "octokit"
-
 module Recruiter
   class Search
-    def initialize(search_strategy: NoSearchStrategy, filters: [])
-      @search_strategy = search_strategy.new(self)
+    def initialize(search_strategy: GithubSearchStrategy, filters: [])
+      @search_strategy = search_strategy
       @filters = filters
       freeze
     end
@@ -32,7 +30,7 @@ module Recruiter
     end
 
     def all
-      @search_strategy.all
+      @search_strategy.new.all(filters)
     end
   end
 end

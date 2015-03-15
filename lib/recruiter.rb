@@ -1,11 +1,10 @@
 require "recruiter/api"
-require "recruiter/candidate"
-require "recruiter/no_search_strategy"
+require "recruiter/github_search_strategy"
 require "recruiter/search"
 require "recruiter/version"
 
 module Recruiter
-  def search(search_strategy: NoSearchStrategy)
+  def search(search_strategy: GithubSearchStrategy)
     Search.new(search_strategy: search_strategy)
   end
 

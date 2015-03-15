@@ -1,5 +1,5 @@
 module Recruiter
-  class Candidate
+  class GithubCandidate
     class Skills
       def initialize(candidate)
         @candidate = candidate

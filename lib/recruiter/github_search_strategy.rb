@@ -1,17 +1,16 @@
+require "recruiter/github_candidate"
+require "octokit"
+
 module Recruiter
-  class NoSearchStrategy
+  class GithubSearchStrategy
     NoFilterError = Class.new(StandardError)
 
-    def initialize(search)
-      @search = search
-    end
-
     def model
-      ::Recruiter::Candidate
+      ::Recruiter::GithubCandidate
     end
 
-    def all
-      ::Recruiter::API.build_client.legacy_search_users(@search.filters).map do |data|
+    def all(filters)
+      ::Recruiter::API.build_client.legacy_search_users(filters).map do |data|
         model.new(data)
       end
     rescue Octokit::NotFound

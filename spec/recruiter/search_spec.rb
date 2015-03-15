@@ -1,6 +1,18 @@
 require 'spec_helper'
 
 describe Recruiter::Search do
+  describe "using other strategies" do
+    it "can search using a particular strategy" do
+      class VerySimpleStrategy
+        def all(search)
+          []
+        end
+      end
+
+      search = described_class.new(search_strategy: VerySimpleStrategy)
+      expect(search.all).to eq([])
+    end
+  end
   describe "#skills" do
     it "returns a collection of candidates with repos that include any of the mentioned skills" do
       search = subject.skills('Ruby,Javascript')

@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe Recruiter::Candidate do
+describe Recruiter::GithubCandidate do
   it "can create a candidate with data" do
     data = double("data",
                   fullname: "field value",
                   location: "Death star",
                   repos: 5)
-    candidate = Recruiter::Candidate.new(data)
+    candidate = Recruiter::GithubCandidate.new(data)
 
     expect(candidate.fullname).to eq("field value")
     expect(candidate.location).to eq("Death star")
@@ -19,7 +19,7 @@ describe Recruiter::Candidate do
                   location: "Death star",
                   login: "darthvader",
                   repos: 5)
-    candidate = Recruiter::Candidate.new(data)
+    candidate = Recruiter::GithubCandidate.new(data)
 
     allow(candidate).to receive(:hireable)
     allow(candidate).to receive(:email)
