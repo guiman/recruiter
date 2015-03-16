@@ -24,10 +24,6 @@ module Recruiter
       ::Recruiter::API.build_client.user(@data.login).rels[:repos].get.data
     end
 
-    def forked_repository_count
-      repository_count - owned_repositories.count
-    end
-
     def skills
       Skills.new(self)
     end
@@ -37,11 +33,11 @@ module Recruiter
     end
 
     def email
-      @email ||= ::Recruiter::API.build_client.user(@data.login).email
+      @email = ::Recruiter::API.build_client.user(@data.login).email
     end
 
     def hireable
-      @hireable ||= ::Recruiter::API.build_client.user(@data.login).hireable
+      @hireable = ::Recruiter::API.build_client.user(@data.login).hireable
     end
 
     def method_missing(name)
