@@ -2,14 +2,10 @@ require 'recruiter/github_candidate/skills'
 
 module Recruiter
   class GithubCandidate
-    DATA_METHODS = [:fullname, :email, :location, :login, :owned_repositories_count, :hireable, :languages]
+    DATA_METHODS = [:name, :email, :location, :login, :owned_repositories_count, :hireable, :languages]
 
     def initialize(data)
       @data = data
-    end
-
-    def repository_count
-      @data.repos
     end
 
     def owned_repositories_count
@@ -21,7 +17,7 @@ module Recruiter
     end
 
     def all_repositories
-      ::Recruiter::API.build_client.user(@data.login).rels[:repos].get.data
+      @data.rels[:repos].get.data
     end
 
     def skills
@@ -33,11 +29,11 @@ module Recruiter
     end
 
     def email
-      @email = ::Recruiter::API.build_client.user(@data.login).email
+      @data.email
     end
 
     def hireable
-      @hireable = ::Recruiter::API.build_client.user(@data.login).hireable
+      @data.hireable
     end
 
     def method_missing(name)

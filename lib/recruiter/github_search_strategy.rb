@@ -10,10 +10,10 @@ module Recruiter
     end
 
     def all(filters)
-      ::Recruiter::API.build_client.legacy_search_users(filters).map do |data|
-        model.new(data)
+      ::Recruiter::API.build_client.search_users(filters).items.map do |data|
+        model.new(::Recruiter::API.build_client.user(data.login))
       end
-    rescue Octokit::NotFound
+    rescue Octokit::UnprocessableEntity
       raise NoFilterError.new("You need to specify a filter to make a search")
     end
   end

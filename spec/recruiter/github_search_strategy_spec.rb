@@ -6,9 +6,11 @@ describe Recruiter::GithubSearchStrategy do
       strategy = described_class.new
 
       github_client = double
-      expect(Recruiter::API).to receive(:build_client).and_return(github_client)
-      expect(github_client).to(
-        receive(:legacy_search_users).and_return([{ fake_data: "more fake data" }]))
+      github_search = double("search", items: [ double(login: "test") ])
+
+      allow(Recruiter::API).to receive(:build_client).and_return(github_client)
+      expect(github_client).to receive(:search_users).and_return(github_search)
+      expect(github_client).to receive(:user).and_return(double)
 
       expect(strategy.all("fake:search").first).to be_a(Recruiter::GithubCandidate)
     end
