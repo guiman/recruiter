@@ -46,7 +46,7 @@ candidate = _.first
 
 candidate.email
 candidate.location
-candidate.fullname
+candidate.name
 candidate.repository_count
 candidate.languages
 candidate.skills
