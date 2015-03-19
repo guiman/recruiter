@@ -33,7 +33,7 @@ describe Recruiter::Search do
     it "returns a collection of candidates with more than 5 repositories" do
       search = subject.at('Portsmouth').and_at('Hampshire')
 
-      expect(search.filters).to eq('location:Portsmouth location:Hampshire')
+      expect(search.filters).to eq('location:"Portsmouth" location:"Hampshire"')
     end
   end
 

@@ -7,7 +7,7 @@ module Recruiter
     end
 
     def at(location)
-      filters = @filters.dup << "location:#{location}"
+      filters = @filters.dup << "location:\"#{location}\""
       self.class.new(filters: filters, search_strategy: @search_strategy)
     end
     alias_method :and_at, :at
