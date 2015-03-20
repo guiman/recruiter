@@ -25,6 +25,8 @@ module Recruiter
         @candidate.owned_repositories.map do |repo|
           repo.rels[:languages].get.data.to_hash.keys
         end
+      rescue Octokit::RepositoryUnavailable
+        []
       end
     end
   end
