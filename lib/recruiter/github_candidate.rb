@@ -2,7 +2,7 @@ require 'recruiter/github_candidate/skills'
 
 module Recruiter
   class GithubCandidate
-    DATA_METHODS = [:name, :email, :location, :login, :owned_repositories_count, :hireable, :languages]
+    DATA_METHODS = [:name, :email, :location, :login, :owned_repositories_count, :hireable, :languages, :avatar_url]
 
     def initialize(data)
       @data = data
