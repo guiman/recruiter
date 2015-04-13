@@ -11,14 +11,30 @@ describe Recruiter::GithubCandidate::Skills do
   end
 
   describe "#languages" do
-    it "returns a hash with languages as key and number of appearence as values" do
+    it "returns a hash with languages as key and repository names that used them as values" do
       skills = described_class.new(double)
-      allow(skills).to receive(:fetch_languages_from_repositories).and_return(
+      allow(skills).to receive(:fetch_repositories).and_return(
         [
-          [:ruby, :javascript], [:javascript], [:ruby, :javascript, :css]
+          { name: "ruby_and_js_repo", languages: [:ruby, :javascript], popularity: 10 },
+          { name: "only_js_repo", languages: [:javascript], popularity: 5 },
+          { name: "awesome_repo", languages: [:ruby, :javascript, :css], popularity: 30 }
         ]
       )
-      expect(skills.languages).to eq({ ruby: 2, javascript: 3, css: 1 })
+
+      expected_result = {
+        css: [{ name: "awesome_repo", popularity: 30 }],
+        ruby: [
+          { name: "ruby_and_js_repo", popularity: 10},
+          { name: "awesome_repo", popularity: 30 }
+        ],
+        javascript: [
+          { name: "ruby_and_js_repo", popularity: 10},
+          { name: "only_js_repo", popularity: 5 },
+          { name: "awesome_repo", popularity: 30 }
+        ]
+      }
+
+      expect(skills.languages).to eq(expected_result)
     end
   end
 end

@@ -13,17 +13,27 @@ module Recruiter
 
 
       def languages
-        fetch_languages_from_repositories.flatten.group_by { |lang| lang }
+        repositories = fetch_repositories
+        languages = repositories.map { |langs| langs.fetch(:languages, []) }
+        languages.flatten.group_by { |lang| lang }
           .map { |k,v| [k, v.count] }
           .sort_by { |pair| pair.last }
-          .inject({}) { |acc, val| acc[val.first] = val.last; acc }
+          .inject({}) do |acc, val|
+            repositories_for_language = repositories.select { |repo| repo.fetch(:languages).include?(val.first) }
+            acc[val.first] = repositories_for_language.map { |repo| { name: repo.fetch(:name), popularity: repo.fetch(:popularity) } }
+            acc
+          end
       end
 
       private
 
-      def fetch_languages_from_repositories
+      def fetch_repositories
         @candidate.owned_repositories.map do |repo|
-          repo.rels[:languages].get.data.to_hash.keys
+          {
+            name: repo.name,
+            languages: repo.rels[:languages].get.data.to_hash.keys,
+            popularity: repo.stargazers_count
+          }
         end
       rescue Octokit::RepositoryUnavailable
         []
