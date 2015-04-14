@@ -1,4 +1,5 @@
 require 'recruiter/github_candidate/skills'
+require 'recruiter/github_candidate/activity'
 
 module Recruiter
   class GithubCandidate
@@ -20,8 +21,16 @@ module Recruiter
       @data.rels[:repos].get.data
     end
 
+    def events
+      @data.rels[:events].get.data
+    end
+
     def skills
       Skills.new(self)
+    end
+
+    def activity
+      Activity.new(self)
     end
 
     def languages
