@@ -20,7 +20,7 @@ module Recruiter
           .sort_by { |pair| pair.last }
           .inject({}) do |acc, val|
             repositories_for_language = repositories.select { |repo| repo.fetch(:languages).include?(val.first) }
-            acc[val.first] = repositories_for_language.map { |repo| { name: repo.fetch(:name), popularity: repo.fetch(:popularity) } }
+            acc[val.first] = repositories_for_language.map { |repo| { name: repo.fetch(:name), popularity: repo.fetch(:popularity), main_language: repo.fetch(:main_language) }  }
             acc
           end
       end
@@ -32,7 +32,8 @@ module Recruiter
           {
             name: repo.name,
             languages: repo.rels[:languages].get.data.to_hash.keys,
-            popularity: repo.stargazers_count
+            popularity: repo.stargazers_count,
+            main_language: repo.language
           }
         end
       rescue Octokit::RepositoryUnavailable

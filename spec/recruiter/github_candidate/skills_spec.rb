@@ -15,22 +15,22 @@ describe Recruiter::GithubCandidate::Skills do
       skills = described_class.new(double)
       allow(skills).to receive(:fetch_repositories).and_return(
         [
-          { name: "ruby_and_js_repo", languages: [:ruby, :javascript], popularity: 10 },
-          { name: "only_js_repo", languages: [:javascript], popularity: 5 },
-          { name: "awesome_repo", languages: [:ruby, :javascript, :css], popularity: 30 }
+          { name: "ruby_and_js_repo", languages: [:ruby, :javascript], popularity: 10, main_language: :ruby },
+          { name: "only_js_repo", languages: [:javascript], popularity: 5, main_language: :javascript },
+          { name: "awesome_repo", languages: [:ruby, :javascript, :css], popularity: 30, main_language: :css}
         ]
       )
 
       expected_result = {
-        css: [{ name: "awesome_repo", popularity: 30 }],
+        css: [{ name: "awesome_repo", popularity: 30, main_language: :css }],
         ruby: [
-          { name: "ruby_and_js_repo", popularity: 10},
-          { name: "awesome_repo", popularity: 30 }
+          { name: "ruby_and_js_repo", popularity: 10, main_language: :ruby },
+          { name: "awesome_repo", popularity: 30, main_language: :css }
         ],
         javascript: [
-          { name: "ruby_and_js_repo", popularity: 10},
-          { name: "only_js_repo", popularity: 5 },
-          { name: "awesome_repo", popularity: 30 }
+          { name: "ruby_and_js_repo", popularity: 10, main_language: :ruby },
+          { name: "only_js_repo", popularity: 5, main_language: :javascript },
+          { name: "awesome_repo", popularity: 30, main_language: :css }
         ]
       }
 
