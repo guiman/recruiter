@@ -4,8 +4,9 @@ require 'redis'
 
 module Recruiter
   class CachedSearchStrategy
-    def initialize(composite: ::Recruiter::GithubSearchStrategy.new)
-      @composite = composite
+    attr_reader :composite
+    def initialize(client:)
+      @composite = ::Recruiter::GithubSearchStrategy.new(client: client)
     end
 
     def self.redis
@@ -22,7 +23,7 @@ module Recruiter
       if cached_search = self.class.redis.get(redis_cache_key)
         cached_search = Marshal.load(cached_search)
       else
-        search_results = @composite.all(search)
+        search_results = composite.all(search)
         self.class.redis.set(redis_cache_key, Marshal.dump(search_results))
         cached_search = search_results
       end

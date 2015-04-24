@@ -5,8 +5,10 @@ describe Recruiter::CachedSearchStrategy do
   describe "#all" do
     it "uses a cache mechanism to return a search" do
       Redis.new.del('fake search') # remove key from redis
+      strategy = described_class.new(client: double)
+
       composite = double
-      strategy = described_class.new(composite: composite)
+      allow(strategy).to receive(:composite).and_return(composite)
       expect(composite).to receive(:all).with('fake search').once.and_return([])
 
       result = strategy.all('fake search')
