@@ -22,7 +22,16 @@ module Recruiter
     end
 
     def events
-      @data.rels[:events].get.data
+      # get ALL the events
+      last_response = @data.rels[:events].get
+      events = last_response.data
+
+      until last_response.rels[:next].nil?
+        last_response = last_response.rels[:next].get
+        events.concat last_response.data
+      end
+
+      events
     end
 
     def skills

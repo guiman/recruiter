@@ -1,34 +1,46 @@
 module Recruiter
   class GithubCandidate
     class Activity
+      EVENT_WHITELIST = ['CreateEvent', 'ForkEvent', 'IssueCommentEvent',
+        'IssueCommentEvent', 'IssuesEvent', 'MemberEvent', 'PublicEvent',
+        'PushEvent', 'ReleaseEvent', 'RepositoryEvent']
+
       def initialize(candidate)
         @candidate = candidate
       end
 
-      def pull_request_events
-        @candidate.events.map do |event|
-          if event.type == "PullRequestEvent" && ["opened", "closed"].include?(event.payload.action)
-            {
-              repository_name: event.repo.name,
-              action: event.payload.action,
-              merged: event.payload.pull_request.merged,
-              sender: event.payload.pull_request.user.login,
-              created_at: event.created_at
-            }
-          end
-        end.compact
-      end
+      def parse_activity
+        @activity ||= @candidate.events.map do |event|
+          parsed_event = {
+            event_type: event.type,
+            created_at: event.created_at,
+            repository: nil,
+            language: nil,
+            updated_at: event.created_at
+          }
 
-      def push_events
-        @candidate.events.map do |event|
-          if event.type == "PushEvent"
-            {
-              repository_name: event.repo.name,
-              commits: event.payload.commits.count,
-              created_at: event.created_at
-            }
+          if EVENT_WHITELIST.include? event.type
+            parsed_event[:repository] = event.repo.name
           end
-        end.compact
+
+          if event.type = 'CommitCommentEvent' && !event.payload.pull_request.nil?
+            parsed_event[:repository] = event.repo.name
+            parsed_event[:language] = event.payload.pull_request.head.repo.language
+          end
+
+          if event.type == 'PullRequestReviewCommentEvent'
+            parsed_event[:repository] = event.repo.name
+            parsed_event[:language] = event.payload.pull_request.head.repo.language
+          end
+
+          if event.type == 'PullRequestEvent'
+            parsed_event[:repository] = event.repo.name
+            parsed_event[:language] = event.payload.pull_request.head.repo.language
+            parsed_event[:updated_at] = event.updated_at
+          end
+
+          parsed_event
+        end
       end
     end
   end
