@@ -21,6 +21,7 @@ module Recruiter
 
           if EVENT_WHITELIST.include? event.type
             parsed_event[:repository] = event.repo.name
+            parsed_event[:language] = Recruiter::API.build_client.repository(event.repo.name).language
           end
 
           if event.type = 'CommitCommentEvent' && !event.payload.pull_request.nil?
