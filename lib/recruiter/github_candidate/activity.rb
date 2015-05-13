@@ -5,8 +5,9 @@ module Recruiter
         'IssueCommentEvent', 'IssuesEvent', 'MemberEvent', 'PublicEvent',
         'PushEvent', 'ReleaseEvent', 'RepositoryEvent']
 
-      def initialize(candidate)
+      def initialize(candidate, client)
         @candidate = candidate
+        @client = client
       end
 
       def parse_activity
@@ -22,7 +23,7 @@ module Recruiter
           if EVENT_WHITELIST.include? event.type
             parsed_event[:repository] = event.repo.name
             begin
-              parsed_event[:language] = Recruiter::API.build_client.repository(event.repo.name).language
+              parsed_event[:language] = @client.repository(event.repo.name).language
             rescue Octokit::NotFound
             end
           end

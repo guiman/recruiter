@@ -38,8 +38,8 @@ module Recruiter
       Skills.new(self)
     end
 
-    def activity
-      Activity.new(self)
+    def activity(client = Recruiter::API.build_client)
+      Activity.new(self, client)
     end
 
     def languages
