@@ -23,24 +23,37 @@ module Recruiter
           if EVENT_WHITELIST.include? event.type
             parsed_event[:repository] = event.repo.name
             begin
-              parsed_event[:language] = @client.repository(event.repo.name).language
+              repository = @client.repository(event.repo.name)
+              parsed_event[:language] = repository.language if !repository.nil?
             rescue Octokit::NotFound
             end
           end
 
           if event.type = 'CommitCommentEvent' && !event.payload.pull_request.nil?
             parsed_event[:repository] = event.repo.name
-            parsed_event[:language] = event.payload.pull_request.head.repo.language
+            if event.payload.pull_request.head.repo.nil?
+              parsed_event[:language] = event.payload.pull_request.base.repo.language
+            else
+              parsed_event[:language] = event.payload.pull_request.head.repo.language
+            end
           end
 
           if event.type == 'PullRequestReviewCommentEvent'
             parsed_event[:repository] = event.repo.name
-            parsed_event[:language] = event.payload.pull_request.head.repo.language
+            if event.payload.pull_request.head.repo.nil?
+              parsed_event[:language] = event.payload.pull_request.base.repo.language
+            else
+              parsed_event[:language] = event.payload.pull_request.head.repo.language
+            end
           end
 
           if event.type == 'PullRequestEvent'
             parsed_event[:repository] = event.repo.name
-            parsed_event[:language] = event.payload.pull_request.head.repo.language
+            if event.payload.pull_request.head.repo.nil?
+              parsed_event[:language] = event.payload.pull_request.base.repo.language
+            else
+              parsed_event[:language] = event.payload.pull_request.head.repo.language
+            end
             parsed_event[:updated_at] = event.updated_at
           end
 
