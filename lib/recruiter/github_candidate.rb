@@ -5,8 +5,11 @@ module Recruiter
   class GithubCandidate
     DATA_METHODS = [:name, :email, :location, :login, :owned_repositories_count, :hireable, :languages, :avatar_url]
 
-    def initialize(data)
+    attr_reader :client
+
+    def initialize(data, client=Recruiter::API.build_client)
       @data = data
+      @client = client
     end
 
     def owned_repositories_count
@@ -15,6 +18,10 @@ module Recruiter
 
     def owned_repositories
       all_repositories.select { |repository| !repository.fork }
+    end
+
+    def organization_list
+      @data.rels[:organizations].get.data
     end
 
     def all_repositories
@@ -38,12 +45,16 @@ module Recruiter
       Skills.new(self)
     end
 
-    def activity(client = Recruiter::API.build_client)
-      Activity.new(self, client)
+    def activity
+      Activity.new(self)
     end
 
     def languages
       skills.languages
+    end
+
+    def contributions
+      skills.organization_contributions
     end
 
     def email
