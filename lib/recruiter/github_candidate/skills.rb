@@ -1,3 +1,5 @@
+require 'recruiter/github_candidate/repository'
+
 module Recruiter
   class GithubCandidate
     class Skills
@@ -6,38 +8,32 @@ module Recruiter
       end
 
       def top(count)
-        @candidate.languages.sort_by{ |k,v| -v }
+        languages.sort_by{ |k,v| -v }
           .map { |pair| pair.first }
           .first(count)
       end
 
-
       def languages
-        repositories = fetch_repositories
-        languages = repositories.map { |langs| langs.fetch(:languages, []) }
-        languages.flatten.group_by { |lang| lang }
-          .map { |k,v| [k, v.count] }
-          .sort_by { |pair| pair.last }
-          .inject({}) do |acc, val|
-            repositories_for_language = repositories.select { |repo| repo.fetch(:languages).include?(val.first) }
-            acc[val.first] = repositories_for_language.map { |repo| { name: repo.fetch(:name), popularity: repo.fetch(:popularity), main_language: repo.fetch(:main_language) }  }
-            acc
-          end
+        repositories = Recruiter::GithubCandidate::Repository.build_from_github_repositories(@candidate.owned_repositories)
+        Recruiter::GithubCandidate::Repository.languages(repositories)
       end
 
-      private
+      def organization_contributions
+        @candidate.organization_list.map do |org|
+          contributions = org.rels[:repos].get.data.map do |repo|
+            all_contributions = @candidate.client.contributors("#{repo.full_name}")
+            next if all_contributions == ""
+            contribution = all_contributions.detect { |contributor| contributor.login == @candidate.login }
+            {
+              repo: repo.full_name,
+              popularity: repo.stargazers_count,
+              main_language: repo.language,
+              contributions: contribution.contributions
+            } if contribution
+          end
 
-      def fetch_repositories
-        @candidate.owned_repositories.map do |repo|
-          {
-            name: repo.name,
-            languages: repo.rels[:languages].get.data.to_hash.keys,
-            popularity: repo.stargazers_count,
-            main_language: repo.language
-          }
+          { org.login => contributions.compact }
         end
-      rescue Octokit::RepositoryUnavailable
-        []
       end
     end
   end

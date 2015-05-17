@@ -22,7 +22,7 @@ module Recruiter
 
     def cast_to_models(github_search)
       github_search.items.map do |data|
-        model.new(::Recruiter::API.build_client.user(data.login))
+        model.new(@client.user(data.login), @client)
       end
     end
   end
