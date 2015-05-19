@@ -1,5 +1,6 @@
 require "recruiter/api"
 require "recruiter/github_search_strategy"
+require "recruiter/github_organization"
 require "recruiter/search"
 require "recruiter/version"
 
