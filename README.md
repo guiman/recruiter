@@ -35,21 +35,25 @@ Or install it yourself as:
 Remember to set GITHUB_ACCESS_TOKEN env variable to increase API threshold limit
 
 ```
-Recruiter.search
-	.at("Portsmouth")
-	.and_at("Southampton")
-	.with_repos('>5')
-	.skills("Ruby,Javascript")
-	.all
+search = Recruiter.search
+search.at("Portsmouth")
+search.and_at("Southampton")
+search.with_repos('>5')
+search.skills("Ruby,Javascript")
+candidates = search.all
 
-candidate = _.first
+candidate = candidates.first
 
 candidate.email
+candidate.avatar_url
 candidate.location
 candidate.name
 candidate.repository_count
 candidate.languages
 candidate.skills
+candidate.hireable
+candidate.activity # all activity from the last 3 months
+candidate.contributions # contributions to all organizations it belongs to
 ```
 
 
