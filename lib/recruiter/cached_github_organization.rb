@@ -1,8 +1,8 @@
-require 'recruiter/github_candidate'
+require 'recruiter/github_organization'
 require 'redis'
 
 module Recruiter
-  class CachedGithubCandidate
+  class CachedGithubOrganization
     def initialize(candidate)
       @candidate = candidate
     end
@@ -22,6 +22,10 @@ module Recruiter
       end
 
       cached_elements
+    end
+
+    def client
+      @candidate.client
     end
 
     def skills

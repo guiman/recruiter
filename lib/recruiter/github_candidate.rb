@@ -29,7 +29,6 @@ module Recruiter
     end
 
     def events
-      # get ALL the events
       last_response = @data.rels[:events].get
       events = last_response.data
 
