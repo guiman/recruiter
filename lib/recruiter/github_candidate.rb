@@ -64,11 +64,11 @@ module Recruiter
     # Raw Github Data Methods
 
     def organization_list_data
-      @data.rels[:organizations].get.data
+      client.organizations(login, type: 'public')
     end
 
     def all_repositories_data
-      @data.rels[:repos].get.data
+      client.repositories(login, type: 'public')
     end
 
     def events

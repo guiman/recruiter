@@ -10,6 +10,12 @@ module Recruiter
     end
 
     def members
+      members_data.map do |member|
+        Recruiter::GithubCandidate(member, client)
+      end
+    end
+
+    def members_data
       @client.auto_paginate = true
       members = @client.organization_public_members(login)
       @client.auto_paginate = false

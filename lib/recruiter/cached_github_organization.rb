@@ -29,6 +29,12 @@ module Recruiter
       @organization.client
     end
 
+    def members
+      members_data.map do |repo|
+        Recruiter::CachedGithubCandidate.new(Recruiter::GithubCandidate.new(repo, client))
+      end
+    end
+
     def public_repositories
       public_repositories_data.map do |repo|
         Recruiter::CachedGithubRepository.new(Recruiter::GithubRepository.new(repo, client))

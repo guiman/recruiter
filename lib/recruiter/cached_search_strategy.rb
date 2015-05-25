@@ -7,28 +7,31 @@ module Recruiter
     attr_reader :composite
     def initialize(client:)
       @composite = ::Recruiter::GithubSearchStrategy.new(client: client)
+      @client = client
     end
 
     def self.redis
       @redis ||= ::Redis.new
     end
 
-    def model
-      ::Recruiter::CachedGithubCandidate
-    end
-
-    def all(search)
-      redis_cache_key = search
+    def all(filters, page: 1)
+      redis_cache_key = filters
 
       if cached_search = self.class.redis.get(redis_cache_key)
         cached_search = Marshal.load(cached_search)
       else
-        search_results = composite.all(search)
+        search_results = composite.all(filters, page: page)
         self.class.redis.set(redis_cache_key, Marshal.dump(search_results))
         cached_search = search_results
       end
 
-      cached_search.map { |candidate| model.new(candidate) }
+      cached_search
+    end
+
+    def cast_to_models(github_search)
+      github_search.items.map do |data|
+        Recruiter::CachedGithubCandidate.new(Recruiter::GithubCandidate.new(@client.user(data.login), @client))
+      end
     end
   end
 end
