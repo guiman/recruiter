@@ -9,9 +9,21 @@ module Recruiter
       @client = client
     end
 
+    def skills
+      Recruiter::GithubCandidate::Skills.new(self)
+    end
+
+    def activity
+      Recruiter::GithubCandidate::Activity.new(self)
+    end
+
+    def languages
+      skills.languages
+    end
+
     def members
       members_data.map do |member|
-        Recruiter::GithubCandidate(member, client)
+        Recruiter::GithubCandidate.new(member, client)
       end
     end
 
@@ -49,6 +61,18 @@ module Recruiter
 
     def public_repositories_data
       client.org_repos(login, {:type => 'public'})
+    end
+
+    def events
+      events = client.organization_public_events(login)
+      last_response = client.last_response
+
+      until last_response.rels[:next].nil?
+        last_response = last_response.rels[:next].get
+        events.concat last_response.data
+      end
+
+      events
     end
   end
 end

@@ -29,6 +29,14 @@ module Recruiter
       @organization.client
     end
 
+    def skills
+      ::Recruiter::GithubCandidate::Skills.new(self)
+    end
+
+    def activity
+      ::Recruiter::GithubCandidate::Activity.new(self)
+    end
+
     def members
       members_data.map do |repo|
         Recruiter::CachedGithubCandidate.new(Recruiter::GithubCandidate.new(repo, client))
