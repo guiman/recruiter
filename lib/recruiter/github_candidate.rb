@@ -1,9 +1,11 @@
-require 'recruiter/github_candidate/skills'
+require 'recruiter/github_organization'
+require 'recruiter/github_repository'
 require 'recruiter/github_candidate/activity'
+require 'recruiter/github_candidate/skills'
 
 module Recruiter
   class GithubCandidate
-    DATA_METHODS = [:name, :email, :location, :login, :owned_repositories_count, :hireable, :languages, :avatar_url]
+    DATA_METHODS = [:name, :email, :location, :login, :hireable, :languages, :avatar_url]
 
     attr_reader :client
 
@@ -12,32 +14,20 @@ module Recruiter
       @client = client
     end
 
-    def owned_repositories_count
-      owned_repositories.count
-    end
-
     def owned_repositories
-      all_repositories.select { |repository| !repository.fork }
+      all_repositories.select { |repository| !repository.fork? }
     end
 
     def organization_list
-      @data.rels[:organizations].get.data
+      organization_list_data.map do |org|
+        Recruiter::GithubOrganization.new(org, client)
+      end
     end
 
     def all_repositories
-      @data.rels[:repos].get.data
-    end
-
-    def events
-      last_response = @data.rels[:events].get
-      events = last_response.data
-
-      until last_response.rels[:next].nil?
-        last_response = last_response.rels[:next].get
-        events.concat last_response.data
+      all_repositories_data.map do |repo|
+        Recruiter::GithubRepository.new(repo, client)
       end
-
-      events
     end
 
     def skills
@@ -56,14 +46,6 @@ module Recruiter
       skills.organization_contributions
     end
 
-    def email
-      @data.email
-    end
-
-    def hireable
-      @data.hireable
-    end
-
     def method_missing(name)
       if DATA_METHODS.include? name
         @data.public_send(name)
@@ -77,6 +59,28 @@ module Recruiter
         acc[method] = self.public_send(method)
         acc
       end
+    end
+
+    # Raw Github Data Methods
+
+    def organization_list_data
+      @data.rels[:organizations].get.data
+    end
+
+    def all_repositories_data
+      @data.rels[:repos].get.data
+    end
+
+    def events
+      events = client.user_public_events(login)
+      last_response = client.last_response
+
+      until last_response.rels[:next].nil?
+        last_response = last_response.rels[:next].get
+        events.concat last_response.data
+      end
+
+      events
     end
   end
 end

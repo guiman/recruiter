@@ -4,9 +4,9 @@ module Recruiter
       def self.build(repository)
         {
           name: repository.name,
-          languages: repository.rels[:languages].get.data.to_hash.keys,
+          languages: repository.languages.to_hash.keys,
           popularity: repository.stargazers_count,
-          main_language: repository.language
+          main_language: repository.main_language
         }
       end
 

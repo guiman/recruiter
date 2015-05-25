@@ -9,15 +9,19 @@ module Recruiter
         @candidate = candidate
       end
 
+      def self.build(event)
+        {
+          event_type: event.type,
+          created_at: event.created_at,
+          repository: nil,
+          language: nil,
+          updated_at: event.created_at
+        }
+      end
+
       def parse_activity
         @activity ||= @candidate.events.map do |event|
-          parsed_event = {
-            event_type: event.type,
-            created_at: event.created_at,
-            repository: nil,
-            language: nil,
-            updated_at: event.created_at
-          }
+          parsed_event = self.class.build(event)
 
           if EVENT_WHITELIST.include? event.type
             parsed_event[:repository] = event.repo.name

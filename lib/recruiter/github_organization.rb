@@ -1,19 +1,12 @@
-require 'recruiter/github_candidate/skills'
-require 'recruiter/github_candidate/activity'
-
 module Recruiter
   class GithubOrganization
     DATA_METHODS = [:name, :email, :location, :login, :languages, :avatar_url]
 
     attr_reader :client
 
-    def initialize(data, client=Recruiter::API.build_client)
+    def initialize(data, client)
       @data = data
       @client = client
-    end
-
-    def owned_repositories_count
-      owned_repositories.count
     end
 
     def members
@@ -24,39 +17,13 @@ module Recruiter
     end
 
     def owned_repositories
-      all_repositories.select { |repository| !repository.fork }
+      public_repositories.select { |repo| !repo.fork? }
     end
 
-    def all_repositories
-      @client.org_repos(login, {:type => 'public'})
-    end
-
-    def events
-      last_response = @data.rels[:events].get
-      events = last_response.data
-
-      until last_response.rels[:next].nil?
-        last_response = last_response.rels[:next].get
-        events.concat last_response.data
+    def public_repositories
+      public_repositories_data.map do |repo|
+        Recruiter::GithubRepository.new(repo, client)
       end
-
-      events
-    end
-
-    def skills
-      Recruiter::GithubCandidate::Skills.new(self)
-    end
-
-    def activity
-      Recruiter::GithubCandidate::Activity.new(self)
-    end
-
-    def languages
-      skills.languages
-    end
-
-    def email
-      @data.email
     end
 
     def method_missing(name)
@@ -72,6 +39,10 @@ module Recruiter
         acc[method] = self.public_send(method)
         acc
       end
+    end
+
+    def public_repositories_data
+      client.org_repos(login, {:type => 'public'})
     end
   end
 end

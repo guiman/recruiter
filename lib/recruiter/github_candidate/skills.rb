@@ -20,14 +20,14 @@ module Recruiter
 
       def organization_contributions
         @candidate.organization_list.map do |org|
-          contributions = org.rels[:repos].get.data.map do |repo|
-            all_contributions = @candidate.client.contributors("#{repo.full_name}")
+          contributions = org.public_repositories.map do |repo|
+            all_contributions = repo.contributors
             next if all_contributions == ""
             contribution = all_contributions.detect { |contributor| contributor.login == @candidate.login }
             {
               repo: repo.full_name,
               popularity: repo.stargazers_count,
-              main_language: repo.language,
+              main_language: repo.main_language,
               contributions: contribution.contributions
             } if contribution
           end
