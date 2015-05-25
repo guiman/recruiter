@@ -15,7 +15,7 @@ module Recruiter
     end
 
     def all(filters, page: 1)
-      redis_cache_key = filters
+      redis_cache_key = "#{filters}_page_#{page}"
 
       if cached_search = self.class.redis.get(redis_cache_key)
         cached_search = Marshal.load(cached_search)
