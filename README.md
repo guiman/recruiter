@@ -1,6 +1,6 @@
 # Recruiter
 
-TODO: Write a gem description
+A gem designed to find potential candidates using Github's API.
 
 ## Dependecies
 
@@ -57,15 +57,27 @@ candidate.contributions # contributions to all organizations it belongs to
 ```
 
 
-## Caching requests
+## Caching techniques
 
-When searching we can make sure our results are cached to prevent exceding the
-Github API limit and also make response time shorter.
+When dealing with candidates, repositories and organizations we can make sure our results are cached to prevent exceding the Github API limit and also make response time shorter.
 
-Introducing `Recruiter.search(search_strategy: Recruiter::CachedSearchStrategy)`.
+In order to use them, do the following:
 
-It will behave the same way as the normal search but with the improvement that
-results will be cached into a redis server.
+
+```
+require 'recruiter/cached_github_candidate'
+
+client = Recruiter::API.build_client(configuration: { access_token: 'TOKEN' } );
+candidate = Recruiter::GithubCandidate.new(client.user("guiman"));
+cached_candidate = Recruiter::CachedGithubCandidate.new(candidate)
+```
+
+With a `cached_candidates` all related objects like `Recruiter::GithubOrganization` will get wrapped in their cached counterparts `Recruiter::CachedGithubOrganization`.
+
+We require Redis to be installed locally and running in localhost on default port.
+
+The general behaviour is, if we can't find the information in local cache, then try to fetch it from github, store it and return the response.
+
 
 ## Running tests gotchats
 When running tests, please make sure redis-server is running and accessible through default setup in localhost. Test related to caching results will try to use it.
