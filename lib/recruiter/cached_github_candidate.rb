@@ -49,5 +49,15 @@ module Recruiter
         Recruiter::CachedGithubRepository.new(Recruiter::GithubRepository.new(repo, client))
       end
     end
+
+    def following
+      following_users_data.map do |following|
+        Recruiter::CachedGithubCandidate.new(Recruiter::GithubCandidate.new(following, client))
+      end
+    end
+
+    def owned_repositories
+      all_repositories.select { |repository| !repository.fork? }
+    end
   end
 end

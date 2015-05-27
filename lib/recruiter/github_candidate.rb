@@ -24,6 +24,12 @@ module Recruiter
       end
     end
 
+    def following
+      following_users_data.map do |following|
+        self.class.new(following, client)
+      end
+    end
+
     def all_repositories
       all_repositories_data.map do |repo|
         Recruiter::GithubRepository.new(repo, client)
@@ -69,6 +75,10 @@ module Recruiter
 
     def all_repositories_data
       client.repositories(login, type: 'public')
+    end
+
+    def following_users_data
+      client.following(login, type: 'public')
     end
 
     def events

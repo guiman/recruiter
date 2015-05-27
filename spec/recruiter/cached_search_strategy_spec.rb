@@ -9,7 +9,7 @@ describe Recruiter::CachedSearchStrategy do
 
       composite = double
       allow(strategy).to receive(:composite).and_return(composite)
-      expect(composite).to receive(:all).with('fake search').once.and_return([])
+      expect(composite).to receive(:all).with('fake search', page: 1).once.and_return([])
 
       result = strategy.all('fake search')
       expect(strategy.all('fake search')).to eq(result)
