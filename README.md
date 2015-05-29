@@ -68,7 +68,7 @@ In order to use them, do the following:
 require 'recruiter/cached_github_candidate'
 
 client = Recruiter::API.build_client(configuration: { access_token: 'TOKEN' } );
-candidate = Recruiter::GithubCandidate.new(client.user("guiman"));
+candidate = Recruiter::GithubCandidate.new(client.user("guiman"), client);
 cached_candidate = Recruiter::CachedGithubCandidate.new(candidate)
 ```
 
@@ -77,6 +77,8 @@ With a `cached_candidates` all related objects like `Recruiter::GithubOrganizati
 We require Redis to be installed locally and running in localhost on default port.
 
 The general behaviour is, if we can't find the information in local cache, then try to fetch it from github, store it and return the response.
+
+Also, if you don't want to start with a candidate, you can use any of the other caching classes individually. Results will always be the same, related objects wrapped in caching clases.
 
 
 ## Running tests gotchats
