@@ -3,11 +3,9 @@ require 'linguist'
 
 module Recruiter
   class GithubCommitAnalyzer
-    def self.analyze(repository, commits, login=nil)
+    def self.analyze(repository, commits)
       commits.map do |commit|
         author = commit.author.nil? ? nil : commit.author.login
-        # Filtering by login
-        next if !login.nil? && author != login
 
         data = repository.commit(commit.sha)[:files].map do |file_info|
           language = Linguist::Language.find_by_filename(file_info.filename).first

@@ -13,6 +13,29 @@ module Recruiter
       @data.language
     end
 
+    def languages_contributions(user=nil)
+      commits = if user
+        self.commits.select { |commit| commit.author && commit.author.login == user }
+      else
+        self.commits
+      end
+
+      analyzer_data = Recruiter::GithubCommitAnalyzer.analyze(self, commits)
+
+      languages = analyzer_data.map { |x| x.fetch(:data).map { |y| y.fetch(:language) } }.flatten.uniq
+      languages_data = languages.inject({}) { |acc, lang| acc[lang] = 0; acc  }
+
+      analyzer_data.each do |commit_data|
+        commit_data_by_language = commit_data.fetch(:data).group_by { |file| file.fetch(:language) }
+        commit_data_by_language.each do |lang, data|
+          # Count of files for the language
+          languages_data[lang] += data.count
+        end
+      end
+
+      { commit_count: commits.count, languages_breakdown: languages_data }
+    end
+
     def languages
       @data.rels[:languages].get.data
     end
@@ -23,6 +46,8 @@ module Recruiter
 
     def commits
       client.commits(full_name)
+    rescue Octokit::Conflict
+      []
     end
 
     def commit(sha)
