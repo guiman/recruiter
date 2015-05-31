@@ -44,6 +44,10 @@ module Recruiter
       Activity.new(self)
     end
 
+    def parsed_activity
+      activity.parse_activity
+    end
+
     def languages
       skills.languages
     end

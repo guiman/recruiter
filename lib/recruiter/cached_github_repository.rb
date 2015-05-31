@@ -11,12 +11,13 @@ module Recruiter
       @redis ||= ::Redis.new
     end
 
-    def method_missing(name)
+    def method_missing(name, *args)
       redis_cache_key = "#{@repository.full_name}_#{name}"
+      redis_cache_key.concat "_#{args.join("_")}" if args.any?
       if elements = self.class.redis.get(redis_cache_key)
         cached_elements = Marshal.load(elements)
       else
-        elements = @repository.public_send(name)
+        elements = args.any? ? @repository.public_send(name, *args) : @repository.public_send(name)
         self.class.redis.set(redis_cache_key, Marshal.dump(elements))
         cached_elements = elements
       end

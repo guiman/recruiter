@@ -21,6 +21,14 @@ module Recruiter
       @data.fork
     end
 
+    def commits
+      client.commits(full_name)
+    end
+
+    def commit(sha)
+      client.commit(full_name, sha)
+    end
+
     def contributors
       client.contributors(full_name)
     end

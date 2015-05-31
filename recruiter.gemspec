@@ -24,4 +24,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "byebug"
   spec.add_dependency "redis"
   spec.add_dependency "octokit"
+  spec.add_dependency "github-linguist"
 end
