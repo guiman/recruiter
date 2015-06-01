@@ -30,6 +30,14 @@ module Recruiter
       @candidate.client
     end
 
+    def languages_2(repos)
+      skills.languages_2(repos)
+    end
+
+    def repositories_contributed
+      @candidate.repositories_contributed
+    end
+
     def skills
       ::Recruiter::GithubCandidate::Skills.new(self)
     end
@@ -54,10 +62,6 @@ module Recruiter
       following_users_data.map do |following|
         Recruiter::CachedGithubCandidate.new(Recruiter::GithubCandidate.new(following, client))
       end
-    end
-
-    def owned_repositories
-      all_repositories.select { |repository| !repository.fork? }
     end
   end
 end

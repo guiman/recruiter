@@ -36,6 +36,18 @@ module Recruiter
       end
     end
 
+    def repositories_contributed
+      organization_list.inject([]) do |acc, org|
+        repositories = org.owned_repositories.select do |repository|
+          repository.commits.detect do |commit|
+            commit.author && commit.author.login == login
+          end
+        end
+        acc.concat repositories
+        acc
+      end
+    end
+
     def skills
       Skills.new(self)
     end
@@ -50,6 +62,10 @@ module Recruiter
 
     def languages
       skills.languages
+    end
+
+    def languages_2(repos)
+      skills.languages_2(repos)
     end
 
     def contributions

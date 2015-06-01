@@ -12,12 +12,13 @@ module Recruiter
       @redis ||= ::Redis.new
     end
 
-    def method_missing(name)
+    def method_missing(name, *args)
       redis_cache_key = "#{@organization.login}_#{name}"
+      redis_cache_key.concat "_#{args.join("_")}" if args.any?
       if elements = self.class.redis.get(redis_cache_key)
         cached_elements = Marshal.load(elements)
       else
-        elements = @organization.public_send(name)
+        elements = args.any? ? @organization.public_send(name, *args) : @organization.public_send(name)
         self.class.redis.set(redis_cache_key, Marshal.dump(elements))
         cached_elements = elements
       end
@@ -43,8 +44,8 @@ module Recruiter
       end
     end
 
-    def public_repositories
-      public_repositories_data.map do |repo|
+    def repositories(include_private=false)
+      repositories_data(include_private).map do |repo|
         Recruiter::CachedGithubRepository.new(Recruiter::GithubRepository.new(repo, client))
       end
     end

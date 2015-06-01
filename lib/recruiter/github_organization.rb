@@ -28,18 +28,18 @@ module Recruiter
     end
 
     def members_data
-      @client.auto_paginate = true
-      members = @client.organization_public_members(login)
-      @client.auto_paginate = false
+      client.auto_paginate = true
+      members = client.organization_public_members(login)
+      client.auto_paginate = false
       members
     end
 
-    def owned_repositories
-      public_repositories.select { |repo| !repo.fork? }
+    def owned_repositories(include_private=false)
+      repositories(include_private).select { |repo| !repo.fork? }
     end
 
-    def public_repositories
-      public_repositories_data.map do |repo|
+    def repositories(include_private=false)
+      repositories_data(include_private).map do |repo|
         Recruiter::GithubRepository.new(repo, client)
       end
     end
@@ -59,8 +59,12 @@ module Recruiter
       end
     end
 
-    def public_repositories_data
-      client.org_repos(login, {:type => 'public'})
+    def repositories_data(include_private=false)
+      if include_private
+        client.org_repos(login)
+      else
+        client.org_repos(login, {:type => 'public'})
+      end
     end
 
     def events

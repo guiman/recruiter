@@ -4,6 +4,17 @@ module Recruiter
 
     attr_reader :client
 
+    def self.build_hash(repository)
+      {
+        name: repository.full_name,
+        languages: repository.languages.to_hash.keys.map(&:to_s),
+        popularity: repository.stargazers_count,
+        main_language: repository.main_language
+      }
+    rescue Octokit::RepositoryUnavailable
+      nil
+    end
+
     def initialize(data, client)
       @data = data
       @client = client
@@ -14,38 +25,35 @@ module Recruiter
     end
 
     def languages_contributions(user=nil)
-      commits = if user
-        self.commits.select { |commit| commit.author && commit.author.login == user }
-      else
-        self.commits
-      end
+      commits = self.commits(user)
 
       analyzer_data = Recruiter::GithubCommitAnalyzer.analyze(self, commits)
-
-      languages = analyzer_data.map { |x| x.fetch(:data).map { |y| y.fetch(:language) } }.flatten.uniq
-      languages_data = languages.inject({}) { |acc, lang| acc[lang] = 0; acc  }
-
-      analyzer_data.each do |commit_data|
-        commit_data_by_language = commit_data.fetch(:data).group_by { |file| file.fetch(:language) }
-        commit_data_by_language.each do |lang, data|
-          # Count of files for the language
-          languages_data[lang] += data.count
-        end
+      commit_count = analyzer_data.count
+      languages_data = analyzer_data.inject(Hash.new(0)) do |acc, data|
+        languages = data.fetch(:data).map { |x| x.fetch(:language) }.uniq
+        languages.each { |lang| acc[lang] += 1 }
+        acc
       end
 
-      { commit_count: commits.count, languages_breakdown: languages_data }
+      { analyzed_file_count: commit_count, languages_breakdown: languages_data }
     end
 
     def languages
-      @data.rels[:languages].get.data
+      @data.rels[:languages].get.data.to_hash
     end
 
     def fork?
       @data.fork
     end
 
-    def commits
-      client.commits(full_name)
+    def commits(author=nil)
+      options = {}
+      options[:author] = author if author
+
+      client.auto_paginate = true
+      c = client.commits(full_name, nil, options)
+      client.auto_paginate = false
+      c
     rescue Octokit::Conflict
       []
     end

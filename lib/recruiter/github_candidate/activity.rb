@@ -12,11 +12,11 @@ module Recruiter
       def self.build(event)
         {
           event_type: event.type,
-          created_at: event.created_at,
+          created_at: event.created_at.to_s,
           repository: nil,
           main_language: nil,
           popularity: nil,
-          updated_at: event.created_at
+          updated_at: event.created_at.to_s
         }
       end
 
@@ -65,7 +65,7 @@ module Recruiter
               parsed_event[:main_language] = event.payload.pull_request.head.repo.language
               parsed_event[:popularity] = event.payload.pull_request.head.repo.stargazers_count
             end
-            parsed_event[:updated_at] = event.updated_at
+            parsed_event[:updated_at] = event.updated_at.to_s
           end
 
           parsed_event
