@@ -1,25 +1,21 @@
 require 'recruiter/github_candidate'
 require 'recruiter/cached_github_repository'
 require 'recruiter/cached_github_organization'
-require 'redis'
+require 'recruiter/redis_cache'
 
 module Recruiter
   class CachedGithubCandidate
-    def initialize(candidate)
+    def initialize(candidate, caching_method)
       @candidate = candidate
-    end
-
-    def self.redis
-      @redis ||= ::Redis.new
+      @caching_method = caching_method
     end
 
     def method_missing(name)
-      redis_cache_key = "#{@candidate.login}_#{name}"
-      if elements = self.class.redis.get(redis_cache_key)
-        cached_elements = Marshal.load(elements)
+      if !(elements = @caching_method.fetch(name.to_s, @candidate.login)).nil?
+        cached_elements = elements
       else
         elements = @candidate.public_send(name)
-        self.class.redis.set(redis_cache_key, Marshal.dump(elements))
+        @caching_method.store(name.to_s, elements, @candidate.login)
         cached_elements = elements
       end
 
