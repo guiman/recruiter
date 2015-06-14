@@ -6,7 +6,7 @@ describe Recruiter::CachedGithubCandidate do
     client = Recruiter::API.build_client(configuration: {
       access_token: ENV.fetch("GITHUB_ACCESS_TOKEN") } )
     github_data = client.user("guiman")
-    caching_method = Recruiter::RedisCache.new(Redis.new)
+    caching_method = Recruiter::RedisCache.new
 
     candidate = Recruiter::GithubCandidate.new(github_data, client)
     cached_candidate = Recruiter::CachedGithubCandidate.new(candidate, caching_method)
@@ -22,7 +22,7 @@ describe Recruiter::CachedGithubCandidate do
 
   it "doesn't cache login" do
     github_data = double("data", login: "guiman")
-    caching_method = Recruiter::RedisCache.new(Redis.new)
+    caching_method = Recruiter::RedisCache.new
     candidate = Recruiter::GithubCandidate.new(github_data, double)
     cached_candidate = Recruiter::CachedGithubCandidate.new(candidate, caching_method)
 

@@ -6,7 +6,7 @@ describe Recruiter::CachedGithubRepository do
     client = Recruiter::API.build_client(configuration: {
       access_token: ENV.fetch("GITHUB_ACCESS_TOKEN") } )
     github_data = client.repo("octokit/octokit.rb")
-    caching_method = Recruiter::RedisCache.new(Redis.new)
+    caching_method = Recruiter::RedisCache.new
 
     repo  = Recruiter::GithubRepository.new(github_data, client)
     cached_repo = Recruiter::CachedGithubRepository.new(repo, caching_method)
@@ -22,7 +22,7 @@ describe Recruiter::CachedGithubRepository do
 
   it "doesn't cache full_name" do
     github_data = double("data", login: "octokit/octokit.rb")
-    caching_method = Recruiter::RedisCache.new(Redis.new)
+    caching_method = Recruiter::RedisCache.new
     repo = Recruiter::GithubRepository.new(github_data, double)
     cached_repo = Recruiter::CachedGithubRepository.new(repo, caching_method)
 

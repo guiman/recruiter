@@ -43,19 +43,19 @@ module Recruiter
 
     def organization_list
       organization_list_data.map do |org|
-        Recruiter::CachedGithubOrganization.new(Recruiter::GithubOrganization.new(org, client))
+        Recruiter::CachedGithubOrganization.new(Recruiter::GithubOrganization.new(org, client), @caching_method)
       end
     end
 
     def all_repositories
       all_repositories_data.map do |repo|
-        Recruiter::CachedGithubRepository.new(Recruiter::GithubRepository.new(repo, client))
+        Recruiter::CachedGithubRepository.new(Recruiter::GithubRepository.new(repo, client), @caching_method)
       end
     end
 
     def following
       following_users_data.map do |following|
-        Recruiter::CachedGithubCandidate.new(Recruiter::GithubCandidate.new(following, client))
+        Recruiter::CachedGithubCandidate.new(Recruiter::GithubCandidate.new(following, client), @caching_method)
       end
     end
   end
