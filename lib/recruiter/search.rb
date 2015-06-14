@@ -1,9 +1,10 @@
 module Recruiter
   class Search
-    def initialize(search_strategy: GithubSearchStrategy, client:)
+    def initialize(search_strategy: GithubSearchStrategy, client:, redis_client: nil)
       @search_strategy = search_strategy
       @filters = []
       @client = client
+      @redis_client = redis_client
     end
 
     def at(location)
@@ -26,14 +27,14 @@ module Recruiter
     end
 
     def all
-      @search_strategy_instance ||= @search_strategy.new(client: @client)
+      @search_strategy_instance ||= @search_strategy.new(client: @client, redis_client: @redis_client)
       @last_search, @raw_response = @search_strategy_instance.all(filters)
       @current_page = 1
       @parsed_response = @search_strategy_instance.cast_to_models(@raw_response)
     end
 
     def page(number)
-      @search_strategy_instance ||= @search_strategy.new(client: @client)
+      @search_strategy_instance ||= @search_strategy.new(client: @client, redis_client: @redis_client)
       @last_search, @raw_response = @search_strategy_instance.all(filters, page: number)
       @current_page = number
       @parsed_response = @search_strategy_instance.cast_to_models(@raw_response)

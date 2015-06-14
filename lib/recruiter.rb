@@ -6,8 +6,8 @@ require "recruiter/search"
 require "recruiter/version"
 
 module Recruiter
-  def search(search_strategy: GithubSearchStrategy, client:)
-    Search.new(search_strategy: search_strategy, client: client)
+  def search(search_strategy: GithubSearchStrategy, client:, redis_client: nil)
+    Search.new(search_strategy: search_strategy, client: client, redis_client: redis_client)
   end
 
   module_function :search

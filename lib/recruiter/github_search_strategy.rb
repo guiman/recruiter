@@ -5,7 +5,7 @@ module Recruiter
   class GithubSearchStrategy
     NoFilterError = Class.new(StandardError)
 
-    def initialize(client:)
+    def initialize(client:, redis_client:nil)
       @client = client
     end
 
