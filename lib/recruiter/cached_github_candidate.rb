@@ -2,28 +2,19 @@ require 'recruiter/github_candidate'
 require 'recruiter/cached_github_repository'
 require 'recruiter/cached_github_organization'
 require 'recruiter/redis_cache'
+require 'recruiter/cache_mechanism'
 
 module Recruiter
   class CachedGithubCandidate
+    include CacheMechanism
+
     def initialize(candidate, caching_method)
       @composite = candidate
       @caching_method = caching_method
     end
 
-    def method_missing(name)
-      if !(elements = @caching_method.fetch(name.to_s, @composite.login)).nil?
-        cached_elements = elements
-      else
-        elements = @composite.public_send(name)
-        @caching_method.store(name.to_s, elements, @composite.login)
-        cached_elements = elements
-      end
-
-      cached_elements
-    end
-
-    def respond_to_missing?(method_name, include_private = false)
-      @composite.respond_to?(method_name) || super
+    def cache_namespace
+      login
     end
 
     def client

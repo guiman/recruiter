@@ -1,31 +1,19 @@
 require 'recruiter/github_organization'
 require 'recruiter/cached_github_repository'
 require 'recruiter/redis_cache'
+require 'recruiter/cache_mechanism'
 
 module Recruiter
   class CachedGithubOrganization
+    include CacheMechanism
+
     def initialize(organization, caching_method)
       @composite = organization
       @caching_method = caching_method
     end
 
-    def method_missing(name, *args)
-      cache_key = name.to_s
-      cache_key.concat "_#{args.join("_")}" if args.any?
-
-      if !(elements = @caching_method.fetch(cache_key, @composite.login)).nil?
-        cached_elements = elements
-      else
-        elements = args.any? ? @composite.public_send(name, *args) : @composite.public_send(name)
-        @caching_method.store(cache_key, elements, @composite.login)
-        cached_elements = elements
-      end
-
-      cached_elements
-    end
-
-    def respond_to_missing?(method_name, include_private = false)
-      @composite.respond_to?(method_name) || super
+    def cache_namespace
+      login
     end
 
     def login
