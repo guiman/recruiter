@@ -4,7 +4,7 @@ module Recruiter
   class RedisCache
     KEY_STORAGE="__cached_keys"
 
-    def initialize(client)
+    def initialize(client=Redis.new)
       @client = client
 
       unless client.get(KEY_STORAGE)

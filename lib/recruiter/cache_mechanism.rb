@@ -18,5 +18,9 @@ module Recruiter
     def respond_to_missing?(method_name, include_private = false)
       @composite.respond_to?(method_name) || super
     end
+
+    def clear_cache_data!
+      @caching_method.remove_namespace(cache_namespace)
+    end
   end
 end
