@@ -29,8 +29,11 @@ module Recruiter
     end
 
     def cast_to_models(github_search)
+      redis_cache = Recruiter::RedisCache.new
+
       github_search.items.map do |data|
-        Recruiter::CachedGithubCandidate.new(Recruiter::GithubCandidate.new(@client.user(data.login), @client))
+        candidate = Recruiter::GithubCandidate.new(@client.user(data.login), @client)
+        Recruiter::CachedGithubCandidate.new(candidate, redis_cache)
       end
     end
   end
