@@ -5,13 +5,17 @@ require 'recruiter/github_candidate/skills'
 
 module Recruiter
   class GithubCandidate
-    DATA_METHODS = [:name, :email, :location, :login, :hireable, :languages, :avatar_url]
+    DATA_METHODS = [:name, :email, :location, :hireable, :languages, :avatar_url]
 
     attr_reader :client
 
     def initialize(data, client=Recruiter::API.build_client)
       @data = data
       @client = client
+    end
+
+    def login
+      @data.login
     end
 
     def owned_repositories
@@ -78,6 +82,10 @@ module Recruiter
       else
         super
       end
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      DATA_METHODS.include?(method_name) || super
     end
 
     def to_hash

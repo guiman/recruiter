@@ -26,8 +26,16 @@ module Recruiter
       cached_elements
     end
 
+    def respond_to_missing?(method_name, include_private = false)
+      @candidate.respond_to?(method_name) || super
+    end
+
     def client
       @candidate.client
+    end
+
+    def login
+      @candidate.login
     end
 
     def languages_2(repos)
