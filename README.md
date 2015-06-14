@@ -69,7 +69,9 @@ require 'recruiter/cached_github_candidate'
 
 client = Recruiter::API.build_client(configuration: { access_token: 'TOKEN' } );
 candidate = Recruiter::GithubCandidate.new(client.user("guiman"), client);
-cached_candidate = Recruiter::CachedGithubCandidate.new(candidate)
+redis_client = Redis.new(....)
+caching_method = Recruiter::RedisCache.new(redis_client)
+cached_candidate = Recruiter::CachedGithubCandidate.new(candidate, caching_method)
 ```
 
 With a `cached_candidates` all related objects like `Recruiter::GithubOrganization` will get wrapped in their cached counterparts `Recruiter::CachedGithubOrganization`.
