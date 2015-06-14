@@ -1,32 +1,38 @@
 require 'recruiter/github_repository'
-require 'redis'
+require 'recruiter/redis_cache'
 
 module Recruiter
   class CachedGithubRepository
-    def initialize(repository)
-      @repository = repository
-    end
-
-    def self.redis
-      @redis ||= ::Redis.new
+    def initialize(repository, caching_method)
+      @composite = repository
+      @caching_method = caching_method
     end
 
     def method_missing(name, *args)
-      redis_cache_key = "#{@repository.full_name}_#{name}"
-      redis_cache_key.concat "_#{args.join("_")}" if args.any?
-      if elements = self.class.redis.get(redis_cache_key)
-        cached_elements = Marshal.load(elements)
+      cache_key = name.to_s
+      cache_key.concat "_#{args.join("_")}" if args.any?
+
+      if !(elements = @caching_method.fetch(cache_key, @composite.full_name)).nil?
+        cached_elements = elements
       else
-        elements = args.any? ? @repository.public_send(name, *args) : @repository.public_send(name)
-        self.class.redis.set(redis_cache_key, Marshal.dump(elements))
+        elements = args.any? ? @composite.public_send(name, *args) : @composite.public_send(name)
+        @caching_method.store(cache_key, elements, @composite.full_name)
         cached_elements = elements
       end
 
       cached_elements
     end
 
+    def respond_to_missing?(method_name, include_private = false)
+      @composite.respond_to?(method_name) || super
+    end
+
+    def full_name
+      @composite.full_name
+    end
+
     def client
-      @repository.client
+      @composite.client
     end
   end
 end

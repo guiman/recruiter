@@ -6,16 +6,16 @@ require 'recruiter/redis_cache'
 module Recruiter
   class CachedGithubCandidate
     def initialize(candidate, caching_method)
-      @candidate = candidate
+      @composite = candidate
       @caching_method = caching_method
     end
 
     def method_missing(name)
-      if !(elements = @caching_method.fetch(name.to_s, @candidate.login)).nil?
+      if !(elements = @caching_method.fetch(name.to_s, @composite.login)).nil?
         cached_elements = elements
       else
-        elements = @candidate.public_send(name)
-        @caching_method.store(name.to_s, elements, @candidate.login)
+        elements = @composite.public_send(name)
+        @caching_method.store(name.to_s, elements, @composite.login)
         cached_elements = elements
       end
 
@@ -23,15 +23,15 @@ module Recruiter
     end
 
     def respond_to_missing?(method_name, include_private = false)
-      @candidate.respond_to?(method_name) || super
+      @composite.respond_to?(method_name) || super
     end
 
     def client
-      @candidate.client
+      @composite.client
     end
 
     def login
-      @candidate.login
+      @composite.login
     end
 
     def languages_2(repos)
@@ -39,7 +39,7 @@ module Recruiter
     end
 
     def repositories_contributed
-      @candidate.repositories_contributed
+      @composite.repositories_contributed
     end
 
     def skills

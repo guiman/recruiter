@@ -52,6 +52,10 @@ module Recruiter
       end
     end
 
+    def respond_to_missing?(method_name, include_private = false)
+      DATA_METHODS.include?(method_name) || super
+    end
+
     def to_hash
       DATA_METHODS.inject({}) do |acc, method|
         acc[method] = self.public_send(method)
