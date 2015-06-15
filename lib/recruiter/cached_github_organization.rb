@@ -1,5 +1,6 @@
 require 'recruiter/github_organization'
 require 'recruiter/cached_github_repository'
+require 'recruiter/cached_github_candidate'
 require 'recruiter/redis_cache'
 require 'recruiter/cache_mechanism'
 
@@ -32,8 +33,8 @@ module Recruiter
       ::Recruiter::GithubCandidate::Activity.new(self)
     end
 
-    def members
-      members_data.map do |repo|
+    def members(type='public')
+      members_data(type).map do |repo|
         Recruiter::CachedGithubCandidate.new(Recruiter::GithubCandidate.new(repo, client), @caching_method)
       end
     end

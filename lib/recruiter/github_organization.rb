@@ -21,15 +21,21 @@ module Recruiter
       skills.languages
     end
 
-    def members
-      members_data.map do |member|
+    def members(type='public')
+      members_data(type).map do |member|
         Recruiter::GithubCandidate.new(member, client)
       end
     end
 
-    def members_data
+    def members_data(type='public')
       client.auto_paginate = true
-      members = client.organization_public_members(login)
+
+      members = if type == 'all'
+        client.organization_members(login)
+      else
+        client.organization_public_members(login)
+      end
+
       client.auto_paginate = false
       members
     end
