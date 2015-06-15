@@ -38,8 +38,8 @@ module Recruiter
       end
     end
 
-    def repositories(include_private=false)
-      repositories_data(include_private).map do |repo|
+    def repositories(type='public')
+      repositories_data(type).map do |repo|
         Recruiter::CachedGithubRepository.new(Recruiter::GithubRepository.new(repo, client), @caching_method)
       end
     end

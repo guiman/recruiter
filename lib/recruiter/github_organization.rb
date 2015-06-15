@@ -34,12 +34,8 @@ module Recruiter
       members
     end
 
-    def owned_repositories(include_private=false)
-      repositories(include_private).select { |repo| !repo.fork? }
-    end
-
-    def repositories(include_private=false)
-      repositories_data(include_private).map do |repo|
+    def repositories(type='public')
+      repositories_data(type).map do |repo|
         Recruiter::GithubRepository.new(repo, client)
       end
     end
@@ -63,12 +59,11 @@ module Recruiter
       end
     end
 
-    def repositories_data(include_private=false)
-      if include_private
-        client.org_repos(login)
-      else
-        client.org_repos(login, {:type => 'public'})
-      end
+    def repositories_data(type='public')
+      client.auto_paginate = true
+      repos = client.org_repos(login, {:type => type})
+      client.auto_paginate = false
+      repos
     end
 
     def events

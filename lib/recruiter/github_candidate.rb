@@ -19,7 +19,9 @@ module Recruiter
     end
 
     def owned_repositories
-      all_repositories.select { |repository| !repository.fork? }
+      repositories_data('sources').map do |repo|
+        Recruiter::GithubRepository.new(repo, client)
+      end
     end
 
     def organization_list
@@ -34,18 +36,16 @@ module Recruiter
       end
     end
 
-    def all_repositories
-      all_repositories_data.map do |repo|
+    def repositories(type='public')
+      repositories_data(type).map do |repo|
         Recruiter::GithubRepository.new(repo, client)
       end
     end
 
     def repositories_contributed
       organization_list.inject([]) do |acc, org|
-        repositories = org.owned_repositories.select do |repository|
-          repository.commits.detect do |commit|
-            commit.author && commit.author.login == login
-          end
+        repositories = org.repositories.select do |repository|
+          repository.commits(login).any?
         end
         acc.concat repositories
         acc
@@ -101,12 +101,18 @@ module Recruiter
       client.organizations(login, type: 'public')
     end
 
-    def all_repositories_data
-      client.repositories(login, type: 'public')
+    def repositories_data(type='public')
+      client.auto_paginate = true
+      repos = client.repositories(login, type: type)
+      client.auto_paginate = false
+      repos
     end
 
     def following_users_data
-      client.following(login, type: 'public')
+      client.auto_paginate = true
+      following = client.following(login, type: 'public')
+      client.auto_paginate = false
+      following
     end
 
     def events

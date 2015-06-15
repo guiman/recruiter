@@ -24,7 +24,7 @@ describe Recruiter::GithubCandidate do
 
   describe "#languages_2" do
     it "returns a list of all the languages" do
-      repositories = subject.all_repositories
+      repositories = subject.repositories
       repositories.concat subject.repositories_contributed
       expect(subject.languages_2(repositories)).to be_a(Hash)
       expect(subject.languages_2(repositories).fetch(:analyzed_file_count)).to eq(263)

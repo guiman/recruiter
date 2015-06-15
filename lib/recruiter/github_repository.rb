@@ -56,6 +56,8 @@ module Recruiter
       c
     rescue Octokit::Conflict
       []
+    rescue Octokit::NotFound
+      []
     end
 
     def commit(sha)
