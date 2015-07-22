@@ -27,7 +27,7 @@ module Recruiter
           if EVENT_WHITELIST.include? event.type
             parsed_event[:repository] = event.repo.name
             begin
-              repository = @candidate.client.repository(event.repo.full_name)
+              repository = @candidate.client.repository(event.repo.full_name) if event.repo.full_name
               parsed_event[:main_language] = repository.language if !repository.nil?
               parsed_event[:popularity] = repository.stargazers_count if !repository.nil?
             rescue Octokit::NotFound
