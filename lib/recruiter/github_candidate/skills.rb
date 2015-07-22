@@ -40,7 +40,7 @@ module Recruiter
 
       def organization_contributions
         @candidate.organization_list.inject({}) do |acc, org|
-          acc[org.login] = org.public_repositories.map do |repo|
+          acc[org.login] = org.repositories.map do |repo|
             all_contributions = repo.contributors
             next if all_contributions == ""
             contribution = all_contributions.detect { |contributor| contributor.login == @candidate.login }
