@@ -1,3 +1,5 @@
+require 'recruiter/github_commit_analyzer'
+
 module Recruiter
   class GithubRepository
     DATA_METHODS = [:name, :full_name, :languages, :stargazers_count, :main_language, :fork?]
