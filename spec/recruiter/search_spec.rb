@@ -6,7 +6,7 @@ describe Recruiter::Search do
   describe "using other strategies" do
     it "can search using a particular strategy" do
       class VerySimpleStrategy
-        def initialize(client:)
+        def initialize(client:, redis_client:)
         end
 
         def all(search)

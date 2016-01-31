@@ -1,5 +1,4 @@
-require 'rugged'
-require 'linguist'
+require 'languages'
 
 module Recruiter
   class GithubCommitAnalyzer
@@ -8,7 +7,7 @@ module Recruiter
         author = commit.author.nil? ? nil : commit.author.login
 
         data = repository.commit(commit.sha)[:files].map do |file_info|
-          language = Linguist::Language.find_by_filename(file_info.filename).first
+          language = Languages::Language.by_extension(File.extname(file_info.filename)).first
           language = language.name if language
           { file: file_info.filename, del: file_info.deletions, add: file_info.additions, language: language }
         end
