@@ -35,7 +35,12 @@ Or install it yourself as:
 Remember to set GITHUB_ACCESS_TOKEN env variable to increase API threshold limit
 
 ```
-search = Recruiter.search
+client = Recruiter::API.build_client(
+  configuration: {
+    access_token: 'TOKEN'
+  }
+)
+search = Recruiter::Search.new(client: client)
 search.at("Portsmouth")
 search.and_at("Southampton")
 search.with_repos('>5')
